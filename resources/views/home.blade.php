@@ -8,11 +8,12 @@
 
         <!-- Fonts -->
         <link href="https://fonts.bunny.net/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
-        <link rel="stylesheet" href="{{ url('css/style.css')}}">
+{{--        <link rel="stylesheet" href="{{ url('css/style.css')}}">--}}
         <link rel="stylesheet" href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.min.css">
         <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
         <!-- CSS only -->
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
+        @vite(['resources/css/app.css', 'resources/js/app.js'])
 
         <!-- Styles -->
 {{--        <style>--}}
@@ -43,7 +44,10 @@
                                 </form>
                             </div>
                         </div>
-                        <div class="col-10 d-flex justify-content-center">
+                        <div class="col-10 d-flex flex-column justify-content-center">
+                            <div class="mb-3">
+
+                            </div>
                             <div class="view-table-wrapper table-responsive">
                             </div>
                         </div>
@@ -64,7 +68,6 @@
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 }
             });
-
             // $(document).ready( function () {
             //     $('#view-table').DataTable();
             // } );
@@ -80,6 +83,8 @@
                 loadTable(e.params.data.text);
             });
 
+            let table;
+            let header;
             function loadTable(tableName){
                 $.ajax({
                     type: 'POST',
@@ -98,7 +103,7 @@
                                         </table>`;
                         $('#view-table').remove()
                         $('.view-table-wrapper').append(tableDOM)
-                        $('#view-table').DataTable({
+                        table = $('#view-table').DataTable({
                             ordering: false,
                             processing: true,
                             serverSide: true,
@@ -107,14 +112,27 @@
                                 type : 'POST',
                                 data: {
                                     table: tableName,
-                                    type: 'data'
+                                    type: 'data',
+                                    _filter: header
                                 },
+                            dataSrc: function(json){
+                                console.log(header);
+                            }
                             },
-                            columns: response.columns
+                            columns: response.columns,
+                            initComplete: function( settings, json ) {
+                                console.log(header);
+                            }
                         });
                     }
                 });
             }
+
+            $(document).on('click','th', function(){
+                header = $(this).html();
+                table.ajax.reload( null, false );
+                console.log(table);
+            });
 
 
         });
