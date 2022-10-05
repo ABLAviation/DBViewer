@@ -16,6 +16,21 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v2-beta
+        with:
+          node-version: '16'
+          check-latest: true
+
+      - name: Clean Cache NPM
+        run: npm cache clean --force
+
+      - name: Install NPM dependencies
+        run: npm install
+
+      - name: Compile assets for production
+        run: npm run build
+
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:

@@ -26,8 +26,9 @@ class QueryController extends Controller
     function getData(Request $request)
     {
         $type = $request->get('type');
+        $header = $request->get('header');
 
-        $query = \DB::table($request->get('table'));
+        $query = \DB::table($request->get('table'))->whereNotNull($header);
         $data = DataTables::query($query)->make(true);
         if($type && $type == 'columns') {
             $columns = collect($data->original['data'][0])->keys();

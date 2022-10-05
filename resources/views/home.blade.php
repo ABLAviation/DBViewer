@@ -84,7 +84,7 @@
             });
 
             let table;
-            let header;
+            let header = 99;
             function loadTable(tableName){
                 $.ajax({
                     type: 'POST',
@@ -113,26 +113,25 @@
                                 data: {
                                     table: tableName,
                                     type: 'data',
-                                    _filter: header
-                                },
-                            dataSrc: function(json){
-                                console.log(header);
-                            }
+                                }
                             },
-                            columns: response.columns,
-                            initComplete: function( settings, json ) {
-                                console.log(header);
-                            }
+                            columns: response.columns
                         });
                     }
                 });
             }
 
+
             $(document).on('click','th', function(){
                 header = $(this).html();
+                table.off('preXhr').on('preXhr', function ( e, settings, data ) {
+                    console.log(data);
+                    data.header = header;
+                });
                 table.ajax.reload( null, false );
                 console.log(table);
             });
+
 
 
         });
