@@ -28,8 +28,14 @@ class QueryController extends Controller
         $type = $request->get('type');
         $header = $request->get('header');
 
-        $query = \DB::table($request->get('table'))->whereNotNull($header);
-        $data = DataTables::query($query)->make(true);
+
+        $query = \DB::table($request->get('table'))->take(200);
+        if($header) {
+            $query = $query->whereNotNull($header)->where($header, '!=',"");
+        }
+
+        $query = $query->get();
+        $data = DataTables::Collection($query)->make(true);
         if($type && $type == 'columns') {
             $columns = collect($data->original['data'][0])->keys();
             $columns = $columns->map(function($col) {
@@ -39,7 +45,6 @@ class QueryController extends Controller
                     'title' => $col,
                 ];
             });
-
             $response = [
                 'columns' => $columns
             ];
